@@ -25,15 +25,6 @@ impl Plugin for MovementPlugin {
                 ..default()
             },
         ))
-        .add_plugins(PhysicsPlugins::new(FixedUpdate))
-        .insert_resource(Time::new_with(Physics::fixed_once_hz(64.0)))
-        .add_plugins(TnuaXpbd3dPlugin::new(FixedUpdate))
-        .add_plugins(TnuaControllerPlugin::new(FixedUpdate))
-        .add_plugins(TnuaCrouchEnforcerPlugin::new(FixedUpdate))
-        .add_systems(
-            FixedUpdate,
-            player_movement.in_set(TnuaUserControlsSystemSet),
-        )
         .add_systems(Update, (draw_interpolated_boxes, draw_confirmed_boxes));
     }
 }

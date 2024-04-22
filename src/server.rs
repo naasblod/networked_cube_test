@@ -1,5 +1,5 @@
 use bevy::app::ScheduleRunnerPlugin;
-use bevy::log::LogPlugin;
+use bevy::log::{Level, LogPlugin};
 use bevy::prelude::*;
 
 use std::net::{Ipv4Addr, SocketAddr};
@@ -26,12 +26,13 @@ use bevy::tasks::TaskPool;
 use lightyear::prelude::server::Certificate;
 
 use std::collections::HashMap;
+use std::time::Duration;
 
 use crate::movement::shared_movement_behaviour;
 use crate::protocol::{
     protocol, ClientAssetLoadingComplete, MyProtocol, PlayerActions, PlayerBundle, Replicate,
 };
-use crate::shared::{shared_config, FIXED_TIMESTEP_HZ};
+use crate::shared::{shared_config, FIXED_TIMESTEP_HZ, SharedPlugin};
 
 #[derive(Resource)]
 pub(crate) struct ServerGlobal {
@@ -43,6 +44,11 @@ pub fn server_app(net_config: server::NetConfig) -> App {
 
     app.add_plugins(
         DefaultPlugins
+            .set(LogPlugin {
+                update_subscriber: None,
+                level: Level::INFO,
+                filter: "wgpu=error,symphonia_core=error,symphonia_format_ogg=error".to_string(),
+            })
             .set(RenderPlugin {
                 render_creation: WgpuSettings {
                     backends: None,
@@ -52,7 +58,6 @@ pub fn server_app(net_config: server::NetConfig) -> App {
                 ..default()
             })
             .disable::<WinitPlugin>()
-            .disable::<LogPlugin>()
             .disable::<GilrsPlugin>(),
     );
 
@@ -83,12 +88,7 @@ pub fn server_app(net_config: server::NetConfig) -> App {
     )
     .add_plugins(LeafwingInputPlugin::<MyProtocol, PlayerActions>::default());
 
-    app.add_plugins(PhysicsPlugins::new(FixedUpdate));
-    app.insert_resource(Time::new_with(Physics::fixed_once_hz(FIXED_TIMESTEP_HZ)));
-    app.add_plugins(TnuaXpbd3dPlugin::new(FixedUpdate));
-    app.add_plugins(TnuaControllerPlugin::new(FixedUpdate));
-    app.add_plugins(TnuaCrouchEnforcerPlugin::new(FixedUpdate));
-    app.add_systems(FixedUpdate, movement.in_set(TnuaUserControlsSystemSet));
+    app.add_plugins(SharedPlugin);
 
     app
 }
@@ -121,7 +121,11 @@ pub fn build_server_net_config() -> lightyear::prelude::server::NetConfig {
 
     server::NetConfig::Netcode {
         config: netcode_config,
-        io: IoConfig::from_transport(transport_config),
+        io: IoConfig::from_transport(transport_config).with_conditioner(LinkConditionerConfig {
+            incoming_latency: Duration::from_millis(100),
+            incoming_jitter: Default::default(),
+            incoming_loss: 0.0,
+        }),
     }
 }
 
