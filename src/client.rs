@@ -18,6 +18,7 @@ use lightyear::shared::config::Mode;
 
 use bevy::log::{Level, LogPlugin};
 
+use crate::shared::SharedPlugin;
 use crate::{
     movement::MovementPlugin,
     protocol::{
@@ -27,7 +28,6 @@ use crate::{
     shared::shared_config,
     world::setup_world,
 };
-use crate::shared::SharedPlugin;
 
 #[derive(States, Default, Clone, Eq, PartialEq, Debug, Hash)]
 pub enum GameClientState {
@@ -157,7 +157,7 @@ fn wait_for_local_player_spawn(
                     RigidBody::Dynamic,
                     LockedAxes::ROTATION_LOCKED,
                     TnuaControllerBundle::default(),
-                    TnuaXpbd3dSensorShape(Collider::cuboid(0.98, 0.0, 0.98)),
+                    TnuaXpbd3dSensorShape(Collider::cuboid(0.98, 0.98, 0.98)),
                 ));
 
             // TODO move this somewhere else ?
