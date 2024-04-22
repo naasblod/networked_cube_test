@@ -6,6 +6,7 @@ use bevy::prelude::*;
 use bevy_xpbd_3d::prelude::*;
 use leafwing_input_manager::prelude::*;
 use lightyear::prelude::*;
+use lightyear::utils::bevy::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Bundle)]
@@ -45,26 +46,26 @@ pub struct PlayerId(pub ClientId);
 pub enum Components {
     #[protocol(sync(mode = "once"))]
     PlayerId(PlayerId),
-
-    #[protocol(sync(
-        mode = "full",
-        lerp = "PositionLinearInterpolation",
-        corrector = "InterpolatedCorrector"
-    ))]
-    Position(Position),
-
-    #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
-    Rotation(Rotation),
-
+    // #[protocol(sync(
+    //     mode = "full",
+    //     lerp = "PositionLinearInterpolation",
+    //     corrector = "InterpolatedCorrector"
+    // ))]
+    // Position(Position),
+    // #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
+    // Position(Position),
+    // #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
+    // Rotation(Rotation),
     // NOTE: correction is only needed for components that are visually displayed!
     #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
     LinearVelocity(LinearVelocity),
 
-    #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
-    AngularVelocity(AngularVelocity),
-
-    #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
-    GlobalTransform(GlobalTransform),
+    // #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
+    // AngularVelocity(AngularVelocity),
+    // #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
+    // GlobalTransform(GlobalTransform),
+    #[protocol(sync(mode = "full", lerp = "TransformLinearInterpolation"))]
+    Transform(Transform),
 }
 
 #[derive(Channel)]

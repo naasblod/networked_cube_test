@@ -11,7 +11,7 @@ use bevy_tnua::control_helpers::TnuaCrouchEnforcerPlugin;
 use bevy_tnua::controller::{TnuaController, TnuaControllerBundle, TnuaControllerPlugin};
 use bevy_tnua::TnuaUserControlsSystemSet;
 use bevy_tnua_xpbd3d::{TnuaXpbd3dPlugin, TnuaXpbd3dSensorShape};
-use bevy_xpbd_3d::components::{LockedAxes, Position, RigidBody};
+use bevy_xpbd_3d::components::{LinearVelocity, LockedAxes, Position, RigidBody};
 use bevy_xpbd_3d::plugins::collision::Collider;
 use bevy_xpbd_3d::plugins::setup::Physics;
 use bevy_xpbd_3d::plugins::PhysicsPlugins;
@@ -32,7 +32,7 @@ use crate::movement::shared_movement_behaviour;
 use crate::protocol::{
     protocol, ClientAssetLoadingComplete, MyProtocol, PlayerActions, PlayerBundle, Replicate,
 };
-use crate::shared::{shared_config, FIXED_TIMESTEP_HZ, SharedPlugin};
+use crate::shared::{shared_config, SharedPlugin, FIXED_TIMESTEP_HZ};
 
 #[derive(Resource)]
 pub(crate) struct ServerGlobal {
@@ -203,6 +203,7 @@ fn on_client_asset_loading_complete(
 
         let mut replicate = Replicate {
             prediction_target: NetworkTarget::Single(client_id),
+            replicate_hierarchy: false,
             interpolation_target: NetworkTarget::AllExceptSingle(client_id),
             ..default()
         };
@@ -210,13 +211,19 @@ fn on_client_asset_loading_complete(
         replicate
             .add_target::<ActionState<PlayerActions>>(NetworkTarget::AllExceptSingle(client_id));
 
+        replicate.add_target::<LinearVelocity>(NetworkTarget::Single(client_id));
+
         let entity = commands.spawn((
             PlayerBundle::new(client_id, Vec3::new(0.0, 10.0, 0.0)),
             replicate,
             TnuaControllerBundle::default(),
             // LockedAxes::new().lock_rotation_x().lock_rotation_z(),
             LockedAxes::ROTATION_LOCKED,
-            TnuaXpbd3dSensorShape(Collider::cuboid(0.98, 0.0, 0.98)),
+            TnuaXpbd3dSensorShape(Collider::cuboid(0.98, 0.98, 0.98)),
+            SpatialBundle {
+                transform: Transform::from_xyz(0.0, 10.0, 0.0),
+                ..default()
+            },
         ));
 
         // Add a mapping from client id to entity id

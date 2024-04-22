@@ -71,14 +71,14 @@ pub fn shared_movement_behaviour(
     }
 
     controller.basis(TnuaBuiltinWalk {
-        desired_velocity: direction.normalize_or_zero() * 0.33,
-        float_height: 2.0,
+        desired_velocity: direction.normalize_or_zero() * 1.0,
+        float_height: 1.0,
         ..Default::default()
     });
 
     if action.pressed(&PlayerActions::Jump) {
         controller.action(TnuaBuiltinJump {
-            height: 4.0,
+            height: 2.0,
             ..Default::default()
         });
     }
@@ -86,28 +86,15 @@ pub fn shared_movement_behaviour(
 
 fn draw_interpolated_boxes(
     mut gizmos: Gizmos,
-    players: Query<(&Position, &Rotation), Or<(With<Interpolated>, With<LocalPlayer>)>>,
+    players: Query<&Transform, Or<(With<Interpolated>, With<LocalPlayer>)>>,
 ) {
-    for (position, rotation) in &players {
-        gizmos.cuboid(
-            Transform::from_xyz(position.x, position.y, position.z)
-                .with_rotation(rotation.0)
-                .with_scale(Vec3::splat(1.0)),
-            Color::BLUE,
-        );
+    for position in &players {
+        gizmos.cuboid(position.with_scale(Vec3::splat(1.0)), Color::BLUE);
     }
 }
 
-fn draw_confirmed_boxes(
-    mut gizmos: Gizmos,
-    players: Query<(&Position, &Rotation), With<Confirmed>>,
-) {
-    for (position, rotation) in &players {
-        gizmos.cuboid(
-            Transform::from_xyz(position.x, position.y, position.z)
-                .with_rotation(rotation.0)
-                .with_scale(Vec3::splat(1.0)),
-            Color::RED,
-        );
+fn draw_confirmed_boxes(mut gizmos: Gizmos, players: Query<&Transform, With<Confirmed>>) {
+    for position in &players {
+        gizmos.cuboid(position.with_scale(Vec3::splat(1.0)), Color::RED);
     }
 }
