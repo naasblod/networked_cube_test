@@ -62,6 +62,9 @@ pub enum Components {
 
     #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
     AngularVelocity(AngularVelocity),
+
+    #[protocol(sync(mode = "full", lerp = "NullInterpolator"))]
+    GlobalTransform(GlobalTransform),
 }
 
 #[derive(Channel)]

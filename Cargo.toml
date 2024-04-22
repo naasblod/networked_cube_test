@@ -26,6 +26,7 @@ features = [
     "vorbis",
     "x11",
     "bevy_gizmos",
+    "serialize",
     #"android_shared_stdcxx",
     "tonemapping_luts",
     "default_font",
