@@ -27,6 +27,7 @@ use crate::{
     shared::shared_config,
     world::setup_world,
 };
+use crate::shared::SharedPlugin;
 
 #[derive(States, Default, Clone, Eq, PartialEq, Debug, Hash)]
 pub enum GameClientState {
@@ -68,7 +69,7 @@ pub fn client_app(net_config: client::NetConfig) -> App {
             .set(LogPlugin {
                 update_subscriber: None,
                 level: Level::INFO,
-                filter: "wgpu=error,symphonia_core=error,symphonia_format_ogg=error".to_string(),
+                filter: "wgpu=error,symphonia_core=error,symphonia_format_ogg=error,lightyear::client::prediction::rollback=debug".to_string(),
             }),
         // WorldPlugin,
         WorldInspectorPlugin::new(),
@@ -88,6 +89,8 @@ pub fn client_app(net_config: client::NetConfig) -> App {
         Update,
         wait_for_local_player_spawn.run_if(in_state(GameClientState::Connecting)),
     );
+
+    app.add_plugins(SharedPlugin);
 
     app
 }

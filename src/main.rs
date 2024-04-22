@@ -28,13 +28,12 @@ fn main() {
     println!("listen_server: {:?}", cli.listen_server);
     println!("client_id: {:?}", cli.client_id);
 
-    let mut client_app = client_app(build_client_net_config(cli.client_id, "127.0.0.1:5000"));
-
     if cli.listen_server {
         let mut server_app = server_app(build_server_net_config());
-
-        std::thread::spawn(move || server_app.run());
+        server_app.run();
+    } else {
+        let mut client_app = client_app(build_client_net_config(cli.client_id, "127.0.0.1:5000"));
+        client_app.run();
     }
 
-    client_app.run();
 }
