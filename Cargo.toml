@@ -1,0 +1,59 @@
+[package]
+name = "networked_cube_test"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies.bevy]
+version = "0.13.0"
+default-features = false
+features = [
+    "animation",
+    "bevy_asset",
+    #"bevy_audio",
+    "bevy_gilrs",
+    "bevy_scene",
+    "bevy_winit",
+    "bevy_core_pipeline",
+    "bevy_pbr",
+    "bevy_gltf",
+    "bevy_render",
+    "bevy_sprite",
+    "bevy_text",
+    "bevy_ui",
+    "multi-threaded",
+    "png",
+    "hdr",
+    "vorbis",
+    "x11",
+    "bevy_gizmos",
+    #"android_shared_stdcxx",
+    "tonemapping_luts",
+    "default_font",
+    #"webgl2"
+]
+
+[dependencies]
+bevy-inspector-egui = "0.23"
+clap = { version = "4.5.4", features = ["derive"] }
+lightyear = { git = "https://github.com/cBournhonesque/lightyear", branch = "cb/lobby-example", features = [
+    "steam",
+    "webtransport",
+    "render",
+    "leafwing",
+] }
+rand = "0.8.5"
+serde = { version = "1.0.197", features = ["derive"] }
+async-compat = "0.2.3"
+derive_more = { version = "0.99", features = ["add", "mul"] }
+bevy-tnua-xpbd3d = "0.4.0"
+bevy-tnua = "0.16.0"
+bevy_xpbd_3d = { version = "0.4", features = ["serialize"] }
+leafwing-input-manager = "0.13"
+
+# Enable a small amount of optimization in debug mode
+[profile.dev]
+opt-level = 1
+
+# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
